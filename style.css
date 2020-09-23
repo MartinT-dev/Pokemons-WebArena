@@ -1,0 +1,260 @@
+*{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#battleBtn{
+    width: 60px;
+    height: 30px;
+}
+
+.title{
+    text-align: center;
+    margin:20px;
+    font-size: 50px;
+    color:white;
+}
+
+.pokemonContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin:10px;
+    
+}
+
+
+.pokemon{
+    width: 800px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    box-shadow: 5px 5px 15px black;
+    border-radius: 2%;
+}
+
+.pokemon:hover{
+    background:white;
+}
+
+.img-container{
+    height: 180px;
+    border: 2px solid black;
+    border-radius: 50%;
+    background:white;
+    position: relative;
+    right:100px;
+}
+
+.img-container img{
+    height: 100%;
+}
+
+.info{
+  
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 150px;
+
+}
+
+.moves{
+
+ 
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px;
+}
+
+.movesList{
+ 
+    list-style-type: none;
+}
+
+.stats{
+ 
+    height: 150px;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px;
+}
+
+.statsList{
+    list-style-type: none;
+}
+
+.container {
+    padding: 40px;
+    margin: 0 auto;
+}
+
+.container.blurActive{
+
+    filter: blur(20px);
+    pointer-events: none;
+}
+
+.popup{
+
+    position: fixed;
+    top:40%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 500px;
+    padding: 50px;
+    box-shadow: 0 5px 30px rgba(0,0,0,.30);
+    color:black;
+    visibility: hidden;
+    opacity:0;
+    transition: 0.5s;
+    border: 30px solid black
+
+}
+
+.displayHp2{
+
+    position: fixed;
+    top:0;
+    left:0;
+    padding-left: 300px;
+    padding-top:20px ;
+
+}
+
+
+.popup.popupActive{
+
+    top:50%;
+    visibility: visible;
+    opacity: 1;
+    transition: 0.5s;
+    transition:ease-in;
+}
+
+.arena-pokemon1{
+
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.arena-img-container1{
+    height: 250px;
+    transition: all 1s ease-in-out;
+    position: relative;
+    left:100px;
+
+  
+    
+}
+
+.arena-img-container1.attack{
+
+    background-clip: text;
+
+    /*  
+
+    
+    left:270px;
+    bottom: 150px; */
+}
+
+@keyframes attack{
+
+    from{
+        transform:translate(0px,0px);
+    }to{
+        transform:translate(350px,100px);
+
+    }
+
+}
+
+
+.arena-img-container1.attack{
+    transform: translate(3em,0);
+}
+
+.arena-img-container1 img{
+    height: 100%;
+  
+}
+
+.arena-info1{
+    position: fixed;
+    bottom: 0;
+    padding-left: 330px;
+    padding-bottom: 20px;
+    color:white;
+    text-shadow: 1px 3px black;
+}
+
+.arena-pokemon2{
+
+    display: flex;
+    position: fixed;
+    right:0;
+    top: 0;
+    padding: 10px;
+}
+.arena-img-container2{
+    height: 250px;
+   
+}   
+
+.arena-img-container2 img{
+    height: 100%;
+}
+
+.arena-info2{
+    position: fixed;
+    top: 0;
+    padding-right: 300px;
+    padding-top: 20px;
+    color:white;
+    text-shadow: 1px 3px black;
+}
+
+
+.btnsContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 300px;
+    align-items: center;
+    position: absolute;
+    top: 50%; right: 50%;
+    transform: translate(50%,-50%);
+    color:white;
+    font-size: 30px;
+}
+
+.playAgainBtn{
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+.closeModalBtn{
+    font-size: 30px;
+}
+
+.arena-name1{
+    font-size: 30px;
+}
+
+.arena-name2{
+    font-size: 30px;
+}
