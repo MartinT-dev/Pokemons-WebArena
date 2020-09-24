@@ -115,6 +115,7 @@
     height: 500px;
     padding: 50px;
     box-shadow: 0 5px 30px rgba(0,0,0,.30);
+    background:url('/img/4.jpg') no-repeat;
     color:black;
     visibility: hidden;
     opacity:0;
@@ -133,6 +134,10 @@
 
 }
 
+.displayHp1{
+
+
+}
 
 .popup.popupActive{
 
@@ -179,7 +184,8 @@
         transform:translate(0px,0px);
     }to{
         transform:translate(350px,100px);
-
+        /* left:350px;
+        bottom:100px; */
     }
 
 }
