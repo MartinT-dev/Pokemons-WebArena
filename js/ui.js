@@ -16,7 +16,7 @@ class UI {
 
 
 
-        for (let i = 1; i <= 20; i++) {
+        for (let i = 1; i <= 150; i++) {
 
             let pokemon = await (UI.getPokemon(i));
 
