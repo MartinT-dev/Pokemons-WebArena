@@ -60,6 +60,7 @@ class UI {
     //Here we get the pokemonCard that is a mapped Pokemon Class and we are going to populate the DIV with the class.
     static createPokeHTML = (pokemonCard) => {
 
+        
         // Creating the DIV and adding it a 'pokemon' class so that we can style it in CSS
         const pokemonDiv = document.createElement('div');
         pokemonDiv.classList.add('pokemon');
@@ -125,7 +126,7 @@ class UI {
             </ul>
         </div>
 
-        <button id="battleBtn" onclick="UI.preparePokemons(${pokemonCard.id})">Battle</button>
+        <button id="battleBtn" onclick="UI.preparePokemons(${pokemonCard.id},${false})">Battle</button>
     `;
 
 
@@ -138,7 +139,6 @@ class UI {
     }
 
     //#endregion
-
 
 
     //#region  --- Mapping ---
@@ -156,13 +156,23 @@ class UI {
     //#endregion
 
 
-
-
-
     //#region  --- Preparing Pokemons for Battle ---
 
 
-    static preparePokemons = async (myPokemonId) => {
+    static preparePokemons = async (myPokemonId,isPlayingAgain) => {
+
+        if(isPlayingAgain === false){
+
+            
+            container.classList.toggle('blurActive');
+            popup.classList.toggle('popupActive');
+
+        }else
+        {
+            popup.innerHTML = '';
+            this.isPlayingAgain = false;
+            
+        }
 
         const myPokemon = await UI.mapPokemon(myPokemonId);
 
@@ -170,19 +180,37 @@ class UI {
             min = 1;
 
         const enemyId = Math.floor(Math.random() * (max - 1)) + min;
-
         
         const enemyPokemon = await UI.mapPokemon(enemyId);
         
-        container.classList.toggle('blurActive');
-        popup.classList.toggle('popupActive');
+       
 
         this.displayPokemons(myPokemon,enemyPokemon);
 
+
+        const hpBar1 = document.querySelector('.displayHp1').getContext('2d');
+        const hpBar2 = document.querySelector('.displayHp2').getContext('2d');
+
         if (myPokemon.speed > enemyPokemon.speed) {
-            UI.pokemonBattle(myPokemon, enemyPokemon);
+            let winner = await UI.pokemonBattle(myPokemon, enemyPokemon,hpBar1,hpBar2);
+
+            if(winner.id == myPokemon.id){
+                let isMyPokemon = true;
+                this.playAgainScreen(winner,isMyPokemon);
+            }else{
+                let isMyPokemon = false;
+                this.playAgainScreen(winner,false);
+            }
         } else {
-            UI.pokemonBattle(enemyPokemon, myPokemon);
+            let winner = await UI.pokemonBattle(enemyPokemon, myPokemon,hpBar2,hpBar1);
+
+            if(winner.id == myPokemon.id){
+                let isMyPokemon = true;
+                this.playAgainScreen(myPokemon.id,isMyPokemon);
+            }else{
+                let isMyPokemon = false;
+                this.playAgainScreen(myPokemon.id,false);
+            }
         }
 
     }
@@ -232,7 +260,12 @@ class UI {
 
     }
 
-    static pokemonAttack = async(attack,defense,hp) => {
+    //#endregion
+
+    //#region --- Battle ---
+
+    // This method calculates the dmg that the pokemon's attack will do 
+    static pokemonAttack = async(attack,defense) => {
 
         const max = 50, min = 0;
         let rngDmg = Math.floor((Math.random() * max) + min);
@@ -241,34 +274,73 @@ class UI {
 
         attackDmg = Math.floor(attackDmg);
 
-        hp -= attackDmg;
-
-        return hp;
+        
+        return attackDmg;
     }
 
-    static pokemonBattle = async (pokemon1, pokemon2) => {
+
+    /*
+        This method accepts the two pokemon's , aswell as two hpBars. The pokemons are passed according to their speed respectively.
+        This method uses a while cycle so that the page is 'frozen' until the battle is done. When one of the pokemons is defeated the winner's id is returned;
+    */
+    static pokemonBattle = async (pokemon1, pokemon2,hpBar1,hpBar2) => {
 
         console.log(`${pokemon1.name} goes first agains ${pokemon2.name}`);
 
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        const poke1MaxHp = pokemon1.hp;
+
+        const poke2MaxHp = pokemon2.hp;
+
+        let winner;
+
         while(pokemon1.hp > 0 && pokemon2.hp > 0){
 
-            let hpAfterAttack1 = await this.pokemonAttack(pokemon1.attack,pokemon2.defense,pokemon2.hp);
+            await delay(2000);
 
-            pokemon2.hp = hpAfterAttack1;
+            let attackDmg1 = await this.pokemonAttack(pokemon1.attack,pokemon2.defense);
 
-            console.log(pokemon2.hp);
+            if(attackDmg1 > 0){
+
+                pokemon2.hp -= attackDmg1;
+                this.drawHealthbar(hpBar2,10,10,160,40,pokemon2.hp,poke2MaxHp);
+                console.log(`Pokemon 2 Hp after the attack is  = ${pokemon2.hp}`);
+                
+
+            }else{
+
+                console.log(`${pokemon1.name} missed`);
+                await delay(1500);
+            }            
 
             if(pokemon2.hp <= 0){
                 console.log(`${pokemon1.name} won`);
-            }else{
+                winner = pokemon1;
+                break;
+            }
+            
+            else{
 
-                let hpAfterAttack2 = await this.pokemonAttack(pokemon2.attack,pokemon1.defense,pokemon1.hp);
+                await delay(2000);
 
-                pokemon1.hp = hpAfterAttack2;
+                let attackDmg2 = await this.pokemonAttack(pokemon2.attack,pokemon1.defense);
 
-                console.log(pokemon1.hp);
+                if(attackDmg2 > 0){
+
+                    pokemon1.hp -= attackDmg2;
+
+                    this.drawHealthbar(hpBar1,10,10,160,40,pokemon1.hp,poke1MaxHp);
+    
+                    console.log(`Pokemon 1 Hp after the attack is  = ${pokemon1.hp}`);
+                }else{
+                    console.log(`${pokemon2.name} missed`);
+                    await delay(1500);
+                }
+
                 if(pokemon1.hp <= 0){
                     console.log(`${pokemon2.name} won`);
+                    winner = pokemon2;
                     break;
                 }
 
@@ -276,17 +348,16 @@ class UI {
 
         }
 
-    }
+        return winner;
 
+    }
 
     //#endregion
 
 
-
-
-
     //#region  --- Canvas ---
 
+    //This method draws a canvas that is used for the HpBars of the pokemons.
     static drawHealthbar = (canvas, x, y, width, height, health, max_health) => {
 
         if (health >= max_health) {
@@ -313,7 +384,54 @@ class UI {
     //#endregion
 
 
+    //#region --- Utilities ---
 
+    //This method clears the HTML of the Popup(the Modal) and adds a h1 that either says 'You win' or 'You lose' and displays two buttons 'Play again' and 'Exit'.
+
+    static playAgainScreen = (myPokemonId,isMyPokemon) => {
+
+        let isPlayingAgain = true;
+
+        if(isMyPokemon === true){
+
+            console.log('You won!');
+            popup.innerHTML = '';
+                         popup.innerHTML = 
+                         `
+                         <div class="btnsContainer">
+                         <h1>'You win'</h1>
+                         <button class="playAgainBtn" onclick="UI.preparePokemons(${myPokemonId},${isPlayingAgain})">Play Again</button>
+                         <button class="closeModalBtn" onclick="UI.closeModal()">Exit</button>
+                             </div>
+                         `
+           
+            
+        }else{
+            console.log('You lost!');
+            popup.innerHTML = '';
+            popup.innerHTML = 
+            `
+            <div class="btnsContainer">
+            <h1>'You lose'</h1>
+            <button class="playAgainBtn" onclick="UI.preparePokemons(${myPokemonId},${isPlayingAgain})">Play Again</button>
+            <button class="closeModalBtn" onclick="UI.closeModal()">Exit</button>
+                </div>
+            `
+            this.isPlayingAgain = true;
+        }
+
+    }
+
+    // This method closes the Popup
+    static closeModal = () => {
+
+        container.classList.toggle('blurActive');
+        popup.classList.toggle('popupActive');
+        
+        popup.innerHTML = '';
+    }
+
+    //#endregion
 
 }
 
